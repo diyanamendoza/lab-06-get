@@ -87,28 +87,129 @@ describe('app routes', () => {
     });
 
 
-  test('returns artwork based on id', async() => {
+    test('returns artwork based on id', async() => {
 
-    const expectation = 
-      {
-        id: 1,  
-        title: "Self-Portrait in a Velvet Dress",
-        artist: "Frida Kahlo",
-        img: 'http://www.kahlo.org/Self-Portrait%20in%20a%20Velvet%20Dress%20Frida%20Kahlo.jpg',
-        century: '20th',
-        category: 'painting',
-        owner_id: 1  
-      }
-    ;
-  
-    const data = await fakeRequest(app)
-      .get('/artworks/1')
-      .expect('Content-Type', /json/);
-      // .expect(200);
-  
-    expect(data.body).toEqual(expectation);
+      const expectation = 
+        {
+          id: 1,  
+          title: "Self-Portrait in a Velvet Dress",
+          artist: "Frida Kahlo",
+          img: 'http://www.kahlo.org/Self-Portrait%20in%20a%20Velvet%20Dress%20Frida%20Kahlo.jpg',
+          century: '20th',
+          category: 'painting',
+          owner_id: 1  
+        }
+      ;
+    
+      const data = await fakeRequest(app)
+        .get('/artworks/1')
+        .expect('Content-Type', /json/);
+        // .expect(200);
+    
+      expect(data.body).toEqual(expectation);
+    });
+
+    test('creates an artwork', async() => {
+
+      const expectation = 
+        {
+          id: expect.any(Number),  
+          title: 'A-E-I-O-U and Sometimes Y',
+          artist: 'Mickalene Thomas',
+          img: 'https://nmwa.org/wp-content/uploads/2020/01/2011.13-768x918.jpg',
+          century: '21st',
+          category: 'painting',
+          owner_id: 1  
+        }
+      ;
+    
+      const data = await fakeRequest(app)
+        .post('/artworks')
+        .send({
+          title: 'A-E-I-O-U and Sometimes Y',
+          artist: 'Mickalene Thomas',
+          img: 'https://nmwa.org/wp-content/uploads/2020/01/2011.13-768x918.jpg',
+          century: '21st',
+          category: 'painting',
+        })
+        .expect('Content-Type', /json/)
+        .expect(200);
+    
+      expect(data.body).toEqual(expectation);
+
+      const allArt = await fakeRequest(app)
+        .get('/artworks')
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(allArt.body).toEqual(expect.arrayContaining([expectation]));
+    });
+
+    test('updates an artwork', async() => {
+
+      const expectation = 
+        {
+          id: expect.any(Number),  
+          title: 'Self-Portrait in a Velvet Dress',
+          artist: 'Frida Kahlo',
+          img: 'http://www.kahlo.org/Self-Portrait%20in%20a%20Velvet%20Dress%20Frida%20Kahlo.jpg',
+          century: '20th',
+          category: 'painting',
+          owner_id: 1  
+        }
+      ;
+    
+      const data = await fakeRequest(app)
+        .put('/artworks/1')
+        .send({
+          title: 'Self-Portrait in a Velvet Dress',
+          artist: 'Frida Kahlo',
+          img: 'http://www.kahlo.org/Self-Portrait%20in%20a%20Velvet%20Dress%20Frida%20Kahlo.jpg',
+          century: '20th',
+          category: 'painting',
+        })
+        .expect('Content-Type', /json/)
+        .expect(200);
+    
+      expect(data.body).toEqual(expectation);
+
+      // const updatedArtwork = await fakeRequest(app)
+      //   .get('/artworks/1')
+      //   .expect('Content-Type', /json/)
+      //   .expect(200);
+
+      // expect(updatedArtwork.body).toEqual(expectation);
+    });
+
+    test('deletes an artwork', async() => {
+      const expectation = 
+        {
+          id: expect.any(Number),  
+          title: 'Self-Portrait in a Velvet Dress',
+          artist: 'Frida Kahlo',
+          img: 'http://www.kahlo.org/Self-Portrait%20in%20a%20Velvet%20Dress%20Frida%20Kahlo.jpg',
+          century: '20th',
+          category: 'painting',
+          owner_id: 1  
+        }
+      ;
+    
+      const data = await fakeRequest(app)
+        .delete('/artworks/1')
+        .expect('Content-Type', /json/)
+        .expect(200);
+    
+      expect(data.body).toEqual(expectation);
+
+      const Artworks = await fakeRequest(app)
+        .get('/artworks')
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(Artworks.body).toEqual(expect.not.arrayContaining([expectation]));
+    });
+
+    //keep these at the bottom! paste new tests above this line
   });
-
-});
 });
 
