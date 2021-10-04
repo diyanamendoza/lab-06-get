@@ -32,49 +32,49 @@ describe('app routes', () => {
 
       const expectation = [
         {
-          id: 1,  
-          title: "Self-Portrait in a Velvet Dress",
-          artist: "Frida Kahlo",
+          piece_id: expect.any(Number),  
+          title: 'Self-Portrait in a Velvet Dress',
+          artist: 'Frida Kahlo',
           img: 'http://www.kahlo.org/Self-Portrait%20in%20a%20Velvet%20Dress%20Frida%20Kahlo.jpg',
           century: '20th',
+          category_id: 1,
           category: 'painting',
-          owner_id: 1  
         },
         {
-          id: 2, 
-          title: "Woman Bathing",
-          artist: "Mary Cassatt",
+          piece_id: expect.any(Number), 
+          title: 'Woman Bathing',
+          artist: 'Mary Cassatt',
           img: 'https://s3.amazonaws.com/assets.saam.media/files/styles/x_large/s3/files/images/1969/SAAM-1969.65.26A_1-000001.jpg',
           century: '19th',
+          category_id: 1,
           category: 'painting',
-          owner_id: 1  
         },
         {
-          id: 3, 
-          title: "Two Women",
-          artist: "Lois Mailou Jones",
+          piece_id: expect.any(Number), 
+          title: 'Two Women',
+          artist: 'Lois Mailou Jones',
           img: 'https://uploads8.wikiart.org/00327/images/lois-mailou-jones/1-1.jpg!Large.jpg',
           century: '20th',
+          category_id: 1,
           category: 'painting',
-          owner_id: 1  
         },
         {
-          id: 4, 
-          title: "Portrait of a Girl",
-          artist: "Guan Zilan",
+          piece_id: expect.any(Number), 
+          title: 'Portrait of a Girl',
+          artist: 'Guan Zilan',
           img: 'https://uploads3.wikiart.org/00116/images/guan-zilan/58831cb5edc2c97a049b0e65.jpg!Large.jpg',
           century: '20th',
+          category_id: expect.any(Number),
           category: 'painting',
-          owner_id: 1  
         },
         {
-          id: 5, 
-          title: "Thinking About Future",
-          artist: "Nina Tokhtaman Valetova",
+          piece_id: expect.any(Number), 
+          title: 'Thinking About Future',
+          artist: 'Nina Tokhtaman Valetova',
           img: 'https://uploads8.wikiart.org/00316/images/nina-tokhtaman-valetova/thinking-about-future-pencil-drawing-202-17-x-14-n-2.JPG!Large.JPG',
           century: '21st',
+          category_id: 2,
           category: 'drawing',
-          owner_id: 1  
         }
       ];
 
@@ -83,21 +83,45 @@ describe('app routes', () => {
         .expect('Content-Type', /json/)
         .expect(200);
 
-      expect(data.body).toEqual(expectation);
+      expect(data.body).toEqual(expect.arrayContaining(expectation));
     });
 
+    test('returns categories', async() => {
+
+      const expectation = [
+        {
+          id: expect.any(Number),  
+          category: 'painting'
+        },
+        {
+          id: expect.any(Number),  
+          category: 'drawing'
+        },
+        {
+          id: expect.any(Number),  
+          category: 'mixed media'
+        }
+      ];
+
+      const data = await fakeRequest(app)
+        .get('/categories')
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(data.body).toEqual(expectation);
+    });
 
     test('returns artwork based on id', async() => {
 
       const expectation = 
         {
-          id: 1,  
-          title: "Self-Portrait in a Velvet Dress",
-          artist: "Frida Kahlo",
+          piece_id: 1,  
+          title: 'Self-Portrait in a Velvet Dress',
+          artist: 'Frida Kahlo',
           img: 'http://www.kahlo.org/Self-Portrait%20in%20a%20Velvet%20Dress%20Frida%20Kahlo.jpg',
           century: '20th',
+          category_id: 1,
           category: 'painting',
-          owner_id: 1  
         }
       ;
     
@@ -113,24 +137,52 @@ describe('app routes', () => {
 
       const expectation = 
         {
-          id: expect.any(Number),  
+          piece_id: expect.any(Number),  
           title: 'A-E-I-O-U and Sometimes Y',
           artist: 'Mickalene Thomas',
           img: 'https://nmwa.org/wp-content/uploads/2020/01/2011.13-768x918.jpg',
           century: '21st',
           category: 'painting',
-          owner_id: 1  
+          category_id: 1,
         }
       ;
     
-      const data = await fakeRequest(app)
+      // const data = 
+      await fakeRequest(app)
         .post('/artworks')
         .send({
           title: 'A-E-I-O-U and Sometimes Y',
           artist: 'Mickalene Thomas',
           img: 'https://nmwa.org/wp-content/uploads/2020/01/2011.13-768x918.jpg',
           century: '21st',
-          category: 'painting',
+          category_id: 1
+        })
+        .expect('Content-Type', /json/)
+        .expect(200);
+    
+      // expect(data.body).toEqual(expectation);
+
+      const allArt = await fakeRequest(app)
+        .get('/artworks')
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(allArt.body).toEqual(expect.arrayContaining([expectation]));
+    });
+
+    test('creates an category', async() => {
+
+      const expectation = 
+        {
+          id: expect.any(Number),  
+          category: 'charcoal' 
+        }
+      ;
+    
+      const data = await fakeRequest(app)
+        .post('/categories')
+        .send({
+          category: 'charcoal'
         })
         .expect('Content-Type', /json/)
         .expect(200);
@@ -138,7 +190,7 @@ describe('app routes', () => {
       expect(data.body).toEqual(expectation);
 
       const allArt = await fakeRequest(app)
-        .get('/artworks')
+        .get('/categories')
         .expect('Content-Type', /json/)
         .expect(200);
 
@@ -150,11 +202,11 @@ describe('app routes', () => {
       const expectation = 
         {
           id: expect.any(Number),  
-          title: 'Self-Portrait in a Velvet Dress',
+          title: 'Self-portrait in a Velvet Dress',
           artist: 'Frida Kahlo',
           img: 'http://www.kahlo.org/Self-Portrait%20in%20a%20Velvet%20Dress%20Frida%20Kahlo.jpg',
           century: '20th',
-          category: 'painting',
+          category_id: 1,
           owner_id: 1  
         }
       ;
@@ -162,11 +214,11 @@ describe('app routes', () => {
       const data = await fakeRequest(app)
         .put('/artworks/1')
         .send({
-          title: 'Self-Portrait in a Velvet Dress',
+          title: 'Self-portrait in a Velvet Dress',
           artist: 'Frida Kahlo',
           img: 'http://www.kahlo.org/Self-Portrait%20in%20a%20Velvet%20Dress%20Frida%20Kahlo.jpg',
           century: '20th',
-          category: 'painting',
+          category_id: 1
         })
         .expect('Content-Type', /json/)
         .expect(200);
@@ -185,11 +237,11 @@ describe('app routes', () => {
       const expectation = 
         {
           id: expect.any(Number),  
-          title: 'Self-Portrait in a Velvet Dress',
+          title: 'Self-portrait in a Velvet Dress',
           artist: 'Frida Kahlo',
           img: 'http://www.kahlo.org/Self-Portrait%20in%20a%20Velvet%20Dress%20Frida%20Kahlo.jpg',
           century: '20th',
-          category: 'painting',
+          category_id: 1,
           owner_id: 1  
         }
       ;

@@ -16,6 +16,10 @@ async function run() {
                     id SERIAL PRIMARY KEY,
                     email VARCHAR(256) NOT NULL,
                     hash VARCHAR(512) NOT NULL
+                );
+                CREATE TABLE categories (
+                  id SERIAL PRIMARY KEY,
+                  category VARCHAR(512) NOT NULL
                 );           
                 CREATE TABLE artworks (
                     id SERIAL PRIMARY KEY NOT NULL,
@@ -23,7 +27,7 @@ async function run() {
                     artist VARCHAR(512) NOT NULL,
                     img VARCHAR(512) NOT NULL,
                     century VARCHAR(512) NOT NULL,
-                    category VARCHAR(512) NOT NULL,
+                    category_id INTEGER NOT NULL REFERENCES categories(id),
                     owner_id INTEGER NOT NULL REFERENCES users(id)
             );
         `);
